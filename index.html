@@ -11,7 +11,7 @@
     <script src="javascripts/kinetic-v5.0.1.min.js"></script>
     <script defer="defer">
     /*-----Initialze Variable-----*/
-	var boxNumber = 8;
+	var boxNumber = 4;
 	var selected_num;
 	
     /*-----Initialze Variable-----*/
@@ -26,6 +26,10 @@
 	  var numGroup = new Kinetic.Group({
 
       });
+	  var coverGroup = new Kinetic.Group({
+
+      });
+	  
       var layer = new Kinetic.Layer();
 	
 	  for(row=0; row<boxNumber; row++){
@@ -39,7 +43,7 @@
 						fill: 'green',
 						stroke: 'black',
 						strokeWidth: 3,
-				        opacity: 0.9,
+				        opacity: 0.9
 					  });
 					  
 					  var number = new Kinetic.Text({
@@ -62,11 +66,21 @@
 							alert(number.text());
 					  });					  					  
 					numGroup.add(number)
-					rectGroup.add(rect);									  
+					rectGroup.add(rect);
+					  var coverBlock = new Kinetic.Rect({
+						x: rect.x(),
+						y: rect.y(),
+						width:rect.width(),
+						height:rect.width(),
+						fill: 'grey',
+						
+					  });
+					coverGroup.add(coverBlock);
 				  })();
 			}
 	  }
       // add the shape to the layer
+	  layer.add(coverGroup);
       layer.add(rectGroup);
       layer.add(numGroup);
       rectGroup.on('mouseover', function() {
@@ -83,7 +97,13 @@
         });
       // add the layer to the stage
       stage.add(layer);	
-
+		
+		setTimeout(function(){
+			coverGroup.moveUp();
+			numGroup.moveDown();
+			rectGroup.moveDown();
+			layer.draw();
+		}, 1000);									  
 	  // setTimeout(function(){alert(stage.find('#'+num)[0].text())},1000);
 
     </script>
