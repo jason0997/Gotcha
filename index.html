@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Getcha</title>
+<link rel="stylesheet" type="text/css" media="screen" href="css/style.css">
+
+</head>
+
+<body>
+    <div id="container1"></div>
+    <script src="javascripts/kinetic-v5.0.1.min.js"></script>
+    <script defer="defer">
+    /*-----Initialze Variable-----*/
+	var boxNumber = 8;
+	var selected_num;
+	
+    /*-----Initialze Variable-----*/
+      var stage = new Kinetic.Stage({
+        container: 'container1',
+        width: 800,
+        height: 600
+      });
+	  var rectGroup = new Kinetic.Group({
+
+      });
+	  var numGroup = new Kinetic.Group({
+
+      });
+      var layer = new Kinetic.Layer();
+	
+	  for(row=0; row<boxNumber; row++){
+	  		for(col=0;col<boxNumber; col++){
+				(function(){
+					  var rect = new Kinetic.Rect({
+						x: 140 + col*(560/boxNumber),
+						y: 20 + row*(560/boxNumber),
+						width: (560/boxNumber-6),
+						height:(560/boxNumber-6),
+						fill: 'green',
+						stroke: 'black',
+						strokeWidth: 3,
+				        opacity: 0.9,
+					  });
+					  
+					  var number = new Kinetic.Text({
+						x: rect.x(),
+						y: rect.y() + rect.height()/4	,
+						text: (Math.floor(Math.random() * boxNumber * 2) + 1),
+						fontSize: 250/boxNumber,
+						width: rect.width(),
+						fontFamily: 'Calibri',
+						fill: '#000',
+						align: 'center',
+						id: row * boxNumber + col
+					  });
+					  rect.on('click', function(evt) {
+							selected_num = number.id();
+							alert(number.text());
+					  });
+					  number.on('click', function(evt) {
+							selected_num = number.id();
+							alert(number.text());
+					  });					  					  
+					numGroup.add(number)
+					rectGroup.add(rect);									  
+				  })();
+			}
+	  }
+      // add the shape to the layer
+      layer.add(rectGroup);
+      layer.add(numGroup);
+      rectGroup.on('mouseover', function() {
+          document.body.style.cursor = 'pointer';
+        });
+       rectGroup.on('mouseout', function() {
+          document.body.style.cursor = 'default';
+        });
+      	numGroup.on('mouseover', function() {
+          document.body.style.cursor = 'pointer';
+        });
+       numGroup.on('mouseout', function() {
+          document.body.style.cursor = 'default';
+        });
+      // add the layer to the stage
+      stage.add(layer);	
+
+	  // setTimeout(function(){alert(stage.find('#'+num)[0].text())},1000);
+
+    </script>
+
+</body>
+</html>

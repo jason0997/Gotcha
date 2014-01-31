@@ -1,0 +1,9 @@
+/* CSS Document */
+#container1{
+	margin:auto;
+	margin-top:20px;
+	border:5px;
+	border-style:dotted;
+	width:800px;
+	height:600px;
+}
