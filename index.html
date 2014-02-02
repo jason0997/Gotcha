@@ -1,112 +1,148 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>Getcha</title>
+<title>Gotcha</title>
 <link rel="stylesheet" type="text/css" media="screen" href="css/style.css">
 <script src="javascripts/helper.js"></script>
 
 </head>
 	<body>
-<p id="test"></p>
+<p id="test" style="position:absolute; top:120px; left:20px"></p>
+<p id="score" style="position:absolute; top:180px; left:20px;"></p>
     <div id="container1"></div>
     <script src="javascripts/kinetic-v5.0.1.min.js"></script>
     <script defer="defer">
     /*-----Initialze Variable-----*/
 	var boxNumber = 4;
 	var selected_num;
+	
+	var score = 0;
+	document.getElementById("score").innerHTML=score;
+	
+	  /* -------- Arrays ---------- */
+	  var numberArray = new Array(boxNumber * 4);
+	  for(i=1;i<=numberArray.length;i++){numberArray[i-1]=i;}
+	  var colorArray = new Array ("white", "green", "blue", "red", "yellow", "Cyan", "pink" , "purple", "Brown");
+	  var checkArray = new Array(numberArray.length);
+	  for(i=0;i<checkArray.length;i++){checkArray[i]=new Array(colorArray.length);	}
+	  /* -------- Arrays ---------- */
+
     /*-----Initialze Variable-----*/
       var stage = new Kinetic.Stage({
         container: 'container1',
         width: 800,
         height: 600
       });
-	  var rectGroup = new Kinetic.Group({
-      });
-	  var numGroup = new Kinetic.Group({
-      });
-	  var coverGroup = new Kinetic.Group({
-      });
 	  
-      var layer = new Kinetic.Layer();
+	  function start(){
+		  var randomNumber = Math.floor(Math.random() * boxNumber * boxNumber);
+		  var rectGroup = new Kinetic.Group({
+		  });
+		  var numGroup = new Kinetic.Group({
+		  });
+		  var coverGroup = new Kinetic.Group({
+		  });
+		  
 	
-	  for(row=0; row<boxNumber; row++){
-	  		for(col=0;col<boxNumber; col++){
-				(function(){
-					  var rect = new Kinetic.Rect({
-						x: 140 + col*(560/boxNumber),
-						y: 20 + row*(560/boxNumber),
-						width: (560/boxNumber-6),
-						height:(560/boxNumber-6),
-						fill: getColor(),
-						stroke: 'black',
-						strokeWidth: 3,
-				        opacity: 0.9
-					  });
-					  
-					  var number = new Kinetic.Text({
-						x: rect.x(),
-						y: rect.y() + rect.height()/4	,
-						text: (Math.floor(Math.random() * boxNumber * 2) + 1),
-						fontSize: 250/boxNumber,
-						width: rect.width(),
-						fontFamily: 'Calibri',
-						fill: '#000',
-						align: 'center',
-						id: row * boxNumber + col
-					  });
-					  rect.on('click', function(evt) {
-							selected_num = number.id();
-							alert(number.text());
-					  });
-					  number.on('click', function(evt) {
-							selected_num = number.id();
-							alert(number.text());
-					  });					  					  
-					numGroup.add(number)
-					rectGroup.add(rect);
-					  var coverBlock = new Kinetic.Rect({
-						x: rect.x(),
-						y: rect.y(),
-						width:rect.width(),
-						height:rect.width(),
-						fill: 'grey',
-						
-					  });
-					coverGroup.add(coverBlock);
-				  })();
-			}
-	  }
-      // add the shape to the layer
-	  layer.add(coverGroup);
-      layer.add(rectGroup);
-      layer.add(numGroup);
-      rectGroup.on('mouseover', function() {
-          document.body.style.cursor = 'pointer';
-        });
-       rectGroup.on('mouseout', function() {
-          document.body.style.cursor = 'default';
-        });
-      	numGroup.on('mouseover', function() {
-          document.body.style.cursor = 'pointer';
-        });
-       numGroup.on('mouseout', function() {
-          document.body.style.cursor = 'default';
-        });
-      // add the layer to the stage
-       stage.add(layer);	
+		  
+		  var layer = new Kinetic.Layer();
 		
-  	   setTimeout(function(){
-			coverGroup.moveUp();
-			numGroup.moveDown();
-			rectGroup.moveDown();
-			layer.draw();
-		}, 1000);		
-	  
-	  //randomNumber(boxNumber * boxNumber);
-	  
-	  	 
-	  //document.getElementById("test").innerHTML=
-	  // setTimeout(function(){alert(stage.find('#'+num)[0].text())},1000);
+		  for(row=0; row<boxNumber; row++){
+				for(col=0;col<boxNumber; col++){
+					(function(){
+						  var boxArray = getItem();
+						  var rect = new Kinetic.Rect({
+							x: 140 + col*(560/boxNumber),
+							y: 20 + row*(560/boxNumber),
+							width: (560/boxNumber-6),
+							height:(560/boxNumber-6),
+							fill: colorArray[boxArray[1]],
+							stroke: 'black',
+							strokeWidth: 5,
+							opacity: 0.9
+						  });
+						  
+						  var number = new Kinetic.Text({
+							x: rect.x(),
+							y: rect.y() + rect.height()/4	,
+							text: numberArray[boxArray[0]],
+							fontSize: 250/boxNumber,
+							width: rect.width(),
+							fontFamily: 'Calibri',
+							fill: '#000',
+							align: 'center',
+							id: row * boxNumber + col
+						  });
+	
+						numGroup.add(number);
+						rectGroup.add(rect);
+						  var coverBlock = new Kinetic.Rect({
+							x: rect.x(),
+							y: rect.y(),
+							width:rect.width(),
+							height:rect.width(),
+							fill: 'grey',
+							id: row * boxNumber + col,
+							visible: true
+						  });
+						  if(coverBlock.id()==randomNumber){
+								document.getElementById("test").innerHTML="Number: " + number.text() + " Color: "+ rect.fill();
+						  }
+						coverGroup.add(coverBlock);
+						 coverBlock.on('click', function(evt){
+							select_num = coverBlock.id();
+							coverBlock.hide();
+							layer.draw();
+							if(select_num == randomNumber){
+								alert("Correct");
+								score += 10;
+								document.getElementById("score").innerHTML=score;
+								layer.remove();
+								start();
+							}
+							else{
+								score -=10;
+								document.getElementById("score").innerHTML=score;
+								alert("Wrong!");
+							}
+						 });
+					  })();
+				}
+		  }
+		  // add the shape to the layer
+		  layer.add(coverGroup);
+		  layer.add(rectGroup);
+		  layer.add(numGroup);
+		  coverGroup.on('mouseover', function() {
+			  document.body.style.cursor = 'pointer';
+			});
+		  coverGroup.on('mouseout', function() {
+			  document.body.style.cursor = 'default';
+			});
+		  // add the layer to the stage
+		   stage.add(layer);	
+			
+		   setTimeout(function(){
+				coverGroup.moveUp();
+				numGroup.moveDown();
+				rectGroup.moveDown();
+				layer.draw();
+			}, 3000);		
+
+	   }
+	    function getItem(){
+			var ranNumber = Math.floor(Math.random() * numberArray.length);
+			var ranColor = Math.floor(Math.random() * colorArray.length);
+			if(checkArray[ranNumber] == "undefined" || checkArray[ranNumber][ranColor] == "undefined" || checkArray[ranNumber][ranColor]!=1){
+				var itemArray = new Array(ranNumber, ranColor);
+				checkArray[ranNumber][ranColor] = 1;
+				return itemArray;
+			}else{
+				return getItem();
+			}		
+		}
+		
+		start();
 
     </script>
 </body>
