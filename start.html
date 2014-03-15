@@ -4,10 +4,14 @@
 <title>Gotcha</title>
 <link rel="stylesheet" type="text/css" media="screen" href="css/style.css">
 <script src="javascripts/helper.js"></script>
-
+<style>
+p{font-size:20px; font-style:normal}
+</style>
 </head>
 	<body>
-<p id="test" style="position:absolute; top:120px; left:20px"></p>
+<p id="number" style="position:absolute; top:120px; left:20px"></p>
+<p style="position:absolute; top:140px; left:20px">Color: </p>
+<p id="color" style="background:;position:absolute; top:140px; left:80px">Color: </p>
 <p  style="position:absolute; top:180px; left:20px;">Score: <p id="score" style=" position:absolute; left:90px; top:180px"></p></p>
 <p style="position:absolute; top:220px; left:20px;" >Live: <p id="live"  style="position:absolute; left:90px; top:220px"></p></p>
 <input  type="button" name"next" id="next" value="Give Up" style="visibility:hidden;position:absolute; top:260px; left:10px;"  onClick="Next()"/>
@@ -49,6 +53,7 @@
 		  for(i=1;i<=numberArray.length;i++){numberArray[i-1]=i;}
 		  colorArray = new Array ("white", "green", "blue", "red", "yellow", "Cyan", "pink" , "purple", "Brown");
 		  checkArray = new Array(numberArray.length);
+		  var randomTextColor = Math.floor(Math.random() * colorArray.length);
 		  for(i=0;i<checkArray.length;i++){checkArray[i]=new Array(colorArray.length);	}	
 	  	  var rectGroup = new Kinetic.Group({
 		  });
@@ -105,7 +110,21 @@
 							visible: true
 						  });
 						  if(coverBlock.id()==randomNumber){
-								document.getElementById("test").innerHTML="Number: " + number.text() + " Color: "+ rect.fill();
+								document.getElementById("number").innerHTML="Number: " + number.text();
+								document.getElementById("color").innerHTML= rect.fill();
+								document.getElementById("color").style.color  = "black";
+								if(colorArray[randomTextColor]!="white"){
+									document.getElementById("color").style.background  = colorArray[randomTextColor];
+								}else{
+									document.getElementById("color").style.background  = "blue";
+								}																
+								document.getElementById("color").style.fontWeight = "bold";
+								/*
+								if(colorArray[randomTextColor] == "white"){
+									document.getElementById("color").style.background  = "black";
+								}else{
+									document.getElementById("color").style.background  = "white";
+								}*/								
 						  }
 						coverGroup.add(coverBlock);
 						 coverBlock.on('click', function(evt){
@@ -115,8 +134,8 @@
 							if(select_num == randomNumber){
 								score += 10;
 								document.getElementById("score").innerHTML=score;
-								document.getElementById("test").innerHTML="Correct!";
-								alert("Correct!");
+//								document.getElementById("test").innerHTML="Correct!";
+								//alert("Correct!");
 								layer.remove();
 								start();
 							}
