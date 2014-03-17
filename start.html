@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Gotcha</title>
+<link rel="stylesheet" type="text/css" media="screen" href="css/style.css">
+<script src="javascripts/helper.js"></script>
+<style>
+p{font-size:20px; font-style:normal}
+</style>
+</head>
+	<body>
+<p id="number" style="position:absolute; top:120px; left:20px"></p>
+<p style="position:absolute; top:140px; left:20px">Color: </p>
+<p id="color" style="background:;position:absolute; top:140px; left:80px">Color: </p>
+<p  style="position:absolute; top:180px; left:20px;">Score: <p id="score" style=" position:absolute; left:90px; top:180px"></p></p>
+<p style="position:absolute; top:220px; left:20px;" >Live: <p id="live"  style="position:absolute; left:90px; top:220px"></p></p>
+<input  type="button" name"next" id="next" value="Give Up" style="visibility:hidden;position:absolute; top:260px; left:10px;"  onClick="Next()"/>
+    <div id="container1"></div>
+    <script src="javascripts/kinetic-v5.0.1.min.js"></script>
+    <script defer="defer">
+    /*-----Initialze Variable-----*/
+	var boxNumber = 3;
+	var selected_num;
+	var colorArray;
+	var score = 0;
+	var checkArray;
+	var speed = 1;
+	var live = 3;
+	var layer = null;
+	document.getElementById("score").innerHTML=score;
+	document.getElementById("live").innerHTML=live;
+
+	  /* -------- Arrays ---------- */
+	  var numberArray = new Array(boxNumber * 4);
+
+	  /* -------- Arrays ---------- */
+
+    /*-----Initialze Variable-----*/
+      var stage = new Kinetic.Stage({
+        container: 'container1',
+        width: 800,
+        height: 600
+      });
+	  function Next(){
+	  	layer.remove();
+		start();
+	  }
+	  function start(){
+		  layer = new Kinetic.Layer();
+		  
+		  document.getElementById("next").style.visibility="hidden";
+		  var randomNumber = Math.floor(Math.random() * boxNumber * boxNumber);
+		  for(i=1;i<=numberArray.length;i++){numberArray[i-1]=i;}
+		  colorArray = new Array ("white", "green", "blue", "red", "yellow", "Cyan", "pink" , "purple", "Brown");
+		  checkArray = new Array(numberArray.length);
+		  var randomTextColor = Math.floor(Math.random() * colorArray.length);
+		  for(i=0;i<checkArray.length;i++){checkArray[i]=new Array(colorArray.length);	}	
+	  	  var rectGroup = new Kinetic.Group({
+		  });
+		  var numGroup = new Kinetic.Group({
+		  });
+		  var coverGroup = new Kinetic.Group({
+		  });
+		  if(score %50 == 0 && score >=50){
+		  	boxNumber += 1;		  
+		  }
+				  
+		  if(score %50 == 0 && score >=50 && speed > 0.3 ){
+		  	speed -= 0.1;
+		  }
+
+		  
+		
+		  for(row=0; row<boxNumber; row++){
+				for(col=0;col<boxNumber; col++){
+					(function(){
+						  var boxArray = getItem();
+						  var rect = new Kinetic.Rect({
+							x: 140 + col*(560/boxNumber),
+							y: 20 + row*(560/boxNumber),
+							width: (560/boxNumber-6),
+							height:(560/boxNumber-6),
+							fill: colorArray[boxArray[1]],
+							stroke: 'black',
+							strokeWidth: 3,
+							opacity: 0.9
+						  });
+						  
+						  var number = new Kinetic.Text({
+							x: rect.x(),
+							y: rect.y() + rect.height()/4	,
+							text: numberArray[boxArray[0]],
+							fontSize: 250/boxNumber,
+							width: rect.width(),
+							fontFamily: 'Calibri',
+							fill: '#000',
+							align: 'center',
+							id: row * boxNumber + col
+						  });
+	
+						numGroup.add(number);
+						rectGroup.add(rect);
+						  var coverBlock = new Kinetic.Rect({
+							x: rect.x(),
+							y: rect.y(),
+							width:rect.width(),
+							height:rect.width(),
+							fill: 'grey',
+							id: row * boxNumber + col,
+							visible: true
+						  });
+						  if(coverBlock.id()==randomNumber){
+								document.getElementById("number").innerHTML="Number: " + number.text();
+								document.getElementById("color").innerHTML= rect.fill();
+								document.getElementById("color").style.color  = "black";
+								if(colorArray[randomTextColor]!="white"){
+									document.getElementById("color").style.background  = colorArray[randomTextColor];
+								}else{
+									document.getElementById("color").style.background  = "blue";
+								}																
+								document.getElementById("color").style.fontWeight = "bold";
+								/*
+								if(colorArray[randomTextColor] == "white"){
+									document.getElementById("color").style.background  = "black";
+								}else{
+									document.getElementById("color").style.background  = "white";
+								}*/								
+						  }
+						coverGroup.add(coverBlock);
+						 coverBlock.on('click', function(evt){
+							select_num = coverBlock.id();
+							coverBlock.hide();
+							layer.draw();
+							if(select_num == randomNumber){
+								score += 10;
+								document.getElementById("score").innerHTML=score;
+//								document.getElementById("test").innerHTML="Correct!";
+								//alert("Correct!");
+								layer.remove();
+								start();
+							}
+							else{
+								score -=10;
+								live-=1;
+								document.getElementById("next").style.visibility="visible";
+								document.getElementById("score").innerHTML=score;
+								document.getElementById("live").innerHTML=live;
+							  if(live <= 0){
+								alert("YOU LOST!");
+								location.reload();
+							  }else{						
+						  		alert("Wrong!");
+							  }	
+							}
+						 });
+					  })();
+				}
+		  }
+		  // add the shape to the layer
+		  layer.add(coverGroup);
+		  layer.add(rectGroup);
+		  layer.add(numGroup);
+		  coverGroup.on('mouseover', function() {
+			  document.body.style.cursor = 'pointer';
+			});
+		  coverGroup.on('mouseout', function() {
+			  document.body.style.cursor = 'default';
+			});
+		  // add the layer to the stage
+		   stage.add(layer);	
+			
+		   setTimeout(function(){
+				coverGroup.moveUp();
+				numGroup.moveDown();
+				rectGroup.moveDown();
+				layer.draw();
+			}, 3000 * speed);		
+
+	   }
+	   
+	    function getItem(){
+			var ranNumber = Math.floor(Math.random() * numberArray.length);
+			var ranColor = Math.floor(Math.random() * colorArray.length);
+			if(ranNumber<checkArray.length && ranColor<checkArray[ranNumber].length && (checkArray[ranNumber] == "undefined" || checkArray[ranNumber][ranColor] == "undefined" || checkArray[ranNumber][ranColor]!=1)){
+				var itemArray = new Array(ranNumber, ranColor);
+				checkArray[ranNumber][ranColor] = 1;
+				return itemArray;
+			}else{
+				return getItem();
+			}		
+		}
+		
+		start();
+
+
+    </script>
+</body>
+
+</html>
